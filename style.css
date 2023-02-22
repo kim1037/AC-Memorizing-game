@@ -1,27 +1,36 @@
 #cards {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .card {
+  /* 卡片在容器內的排版 */
   flex: 7% 0 1;
-  height: 8vw; /* 依照視窗大小變動 */
+  /* flex-basis(比例/pixel等...) 1排13張 100/13 約7%, flex-grow 有剩餘的空間是否填滿, flex-shirnk 如果空間不夠是否收縮自己的大小 */
+  /* 因為cards的flex-direction為row 所以此處7%就是指寬度 */
+  height: 8vw;
   border: 2px solid #e0e0e0;
+  margin: 2px;
+  box-sizing: border-box;
+
+  /* 卡片內部元素的排版 - 數字+圖片 */
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  flex-direction: column; /* main axis */
+  justify-content: space-around; /* 希望前後留空間 */
 }
 
 .card img {
   max-width: 30%;
-  align-self: center;
+  align-self: center; /* 排交叉軸時用的, 會出現置中效果 */
 }
 
 .card p {
-  margin: 3px;
-  font-size: 10px;
+  margin: 8px;
+  font-size: 16px;
+  font-family: monospace, sans-serif;
 }
 
-/* 卡片下方數字反轉字體 */
+/* 下層數字顛倒 */
 .card p:last-child {
   transform: rotate(180deg);
 }
