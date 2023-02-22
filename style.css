@@ -34,3 +34,14 @@
 .card p:last-child {
   transform: rotate(180deg);
 }
+
+.card:hover{
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* 卡片背面 */
+.back {
+  background: url('https://assets-lighthouse.alphacamp.co/uploads/image/file/9222/ExportedContentImage_00.png');
+  background-size: cover;
+}

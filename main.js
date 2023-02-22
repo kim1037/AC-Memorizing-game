@@ -6,16 +6,18 @@ const Symbols = [
 ];
 
 const view = {
-  getCardElement(index) {
+  getCardContent(index){
     //根據數字運算來判斷花色及號碼
     const number = this.transfromNumber((index % 13) + 1);
     const symbol = Symbols[Math.floor(index / 13)];
 
-    return `<div class="card">
-      <p>${number}</p>
+    return `<p>${number}</p>
       <img src="${symbol}" alt="">
-      <p>${number}</p>
-    </div>`;
+      <p>${number}</p>`;
+  },
+
+  getCardElement(index) {
+    return `<div class="card back" data-index="${index}"></div>`;
   },
 
   transfromNumber(number) {
@@ -39,6 +41,21 @@ const view = {
       .map((index) => this.getCardElement(index))
       .join("");
   },
+  
+  //翻牌動作
+  filpCard(card){
+    console.log(card)
+    //如果是覆蓋狀態會包含back class name
+    if(card.classList.contains('back')){
+      //return正面
+      card.classList.remove('back')
+      card.innerHTML = this.getCardContent(card.dataset.index)
+      return
+    }
+    //如果是翻開狀態，覆蓋回去，class name加入back
+    card.classList.add('back')
+    card.innerHTML = null //清空內容
+  }
 };
 
 //洗牌函式
@@ -55,3 +72,10 @@ const utility = {
 
 
 view.displayCards();
+
+//監聽卡片點擊事件
+document.querySelectorAll(".card").forEach((card) => {
+  card.addEventListener("click", (event) => {
+    view.filpCard(card)
+  });
+});
