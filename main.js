@@ -1,9 +1,22 @@
+const GAME_STATE = {
+  FirstCardAwaits: "FirstCardAwaits",
+  SecondCardAwaits: "SecondCardAwaits",
+  CardsMatchFailed: "CardsMatchFailed",
+  CardsMatched: "CardsMatched",
+  GameFinished: "GameFinished",
+};
+
 const Symbols = [
   "https://assets-lighthouse.alphacamp.co/uploads/image/file/17989/__.png", // 黑桃
   "https://assets-lighthouse.alphacamp.co/uploads/image/file/17992/heart.png", // 愛心
   "https://assets-lighthouse.alphacamp.co/uploads/image/file/17991/diamonds.png", // 方塊
   "https://assets-lighthouse.alphacamp.co/uploads/image/file/17988/__.png", // 梅花
 ];
+
+const model = {
+  revealedCards : [] //存放每次 翻開的牌
+}
+
 
 const view = {
   getCardContent(index){
@@ -35,11 +48,9 @@ const view = {
     }
   },
 
-  displayCards() {
+  displayCards(indexes) {
     const rootElement = document.querySelector("#cards");
-    rootElement.innerHTML = utility.getRandomNumberArray(52)
-      .map((index) => this.getCardElement(index))
-      .join("");
+    rootElement.innerHTML = indexes.map((index) => this.getCardElement(index)).join("");
   },
   
   //翻牌動作
@@ -70,8 +81,35 @@ const utility = {
   },
 }
 
+const controller = {
+  currentState : GAME_STATE.FirstCardAwaits, //初始為尚未翻牌的狀態
+  generateCards(){
+    view.displayCards(utility.getRandomNumberArray(52));
+  },
 
-view.displayCards();
+  dispatchCardAction(card){
+    if(!card.classList.contains('back')){
+      return
+    }
+    switch (this.currentState){
+      case GAME_STATE.FirstCardAwaits:
+        view.filpCard(card)
+        model.revealedCards.push(card)
+        this.currentState = GAME_STATE.SecondCardAwaits
+        break
+      case GAME_STATE.SecondCardAwaits:
+        view.filpCard(card)
+        model.revealedCards.push(card)
+        //判斷配對成功與否
+        break
+    }
+    console.log('this.currentStage:',this.currentState)
+    console.log('revealedCards', model.revealedCards.map(card=> card.dataset.index))
+  },
+}
+
+
+controller.generateCards()
 
 //監聽卡片點擊事件
 document.querySelectorAll(".card").forEach((card) => {

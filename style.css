@@ -35,13 +35,14 @@
   transform: rotate(180deg);
 }
 
-.card:hover{
+.card:hover {
   transform: scale(1.05);
   cursor: pointer;
 }
 
-/* 卡片背面 */
+/* 卡片背面 -- google background可以找其他花色的牌 */
 .back {
-  background: url('https://assets-lighthouse.alphacamp.co/uploads/image/file/9222/ExportedContentImage_00.png');
+  background: url("https://assets-lighthouse.alphacamp.co/uploads/image/file/9222/ExportedContentImage_00.png");
   background-size: cover;
 }
+/* 翻牌效果參考:https://www.tpisoftware.com/tpu/articleDetails/2748 */
