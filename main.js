@@ -14,12 +14,19 @@ const Symbols = [
 ];
 
 const model = {
-  revealedCards : [] //存放每次 翻開的牌
-}
+  revealedCards: [], //存放每次 翻開的牌
 
+  isRevealedCardsMatched() {
+    //檢查配對
+    return (
+      this.revealedCards[0].dataset.index % 13 ===
+      this.revealedCards[1].dataset.index % 13
+    ); //true or false
+  },
+};
 
 const view = {
-  getCardContent(index){
+  getCardContent(index) {
     //根據數字運算來判斷花色及號碼
     const number = this.transfromNumber((index % 13) + 1);
     const symbol = Symbols[Math.floor(index / 13)];
@@ -50,70 +57,104 @@ const view = {
 
   displayCards(indexes) {
     const rootElement = document.querySelector("#cards");
-    rootElement.innerHTML = indexes.map((index) => this.getCardElement(index)).join("");
+    rootElement.innerHTML = indexes
+      .map((index) => this.getCardElement(index))
+      .join("");
   },
-  
+
   //翻牌動作
-  filpCard(card){
-    console.log(card)
-    //如果是覆蓋狀態會包含back class name
-    if(card.classList.contains('back')){
-      //return正面
-      card.classList.remove('back')
-      card.innerHTML = this.getCardContent(card.dataset.index)
-      return
-    }
-    //如果是翻開狀態，覆蓋回去，class name加入back
-    card.classList.add('back')
-    card.innerHTML = null //清空內容
-  }
+  flipCards(...cards) {
+    cards.map((card) => {
+      //如果是覆蓋狀態會包含back class name
+      if (card.classList.contains("back")) {
+        //return正面
+        card.classList.remove("back");
+        card.innerHTML = this.getCardContent(Number(card.dataset.index));
+        return;
+      }
+      //如果是翻開狀態，覆蓋回去，class name加入back
+      card.classList.add("back");
+      card.innerHTML = null; //清空內容
+    });
+  },
+
+  pairCards(...cards) {
+    //配對成功 牌面維持翻開
+    cards.map((card) => {
+      card.classList.add("paired");
+    });
+  },
 };
 
 //洗牌函式
 const utility = {
-  getRandomNumberArray(count){
-    const number = Array.from(Array(count).keys())
-    for (let index = number.length-1; index>0 ; index--){
-      let randomIndex = Math.floor(Math.random()*(index+1));
-      [number[index],number[randomIndex]] = [number[randomIndex],number[index]]
+  getRandomNumberArray(count) {
+    const number = Array.from(Array(count).keys());
+    for (let index = number.length - 1; index > 0; index--) {
+      let randomIndex = Math.floor(Math.random() * (index + 1));
+      [number[index], number[randomIndex]] = [
+        number[randomIndex],
+        number[index],
+      ];
     }
-    return number
+    return number;
   },
-}
+};
 
 const controller = {
-  currentState : GAME_STATE.FirstCardAwaits, //初始為尚未翻牌的狀態
-  generateCards(){
+  currentState: GAME_STATE.FirstCardAwaits, //初始為尚未翻牌的狀態
+  generateCards() {
     view.displayCards(utility.getRandomNumberArray(52));
   },
 
-  dispatchCardAction(card){
-    if(!card.classList.contains('back')){
-      return
+  dispatchCardAction(card) {
+    if (!card.classList.contains("back")) {
+      return;
     }
-    switch (this.currentState){
+    switch (this.currentState) {
       case GAME_STATE.FirstCardAwaits:
-        view.filpCard(card)
-        model.revealedCards.push(card)
-        this.currentState = GAME_STATE.SecondCardAwaits
-        break
+        view.flipCards(card);
+        model.revealedCards.push(card);
+        this.currentState = GAME_STATE.SecondCardAwaits;
+        break;
       case GAME_STATE.SecondCardAwaits:
-        view.filpCard(card)
-        model.revealedCards.push(card)
+        view.flipCards(card);
+        model.revealedCards.push(card);
         //判斷配對成功與否
-        break
+        if (model.isRevealedCardsMatched()) {
+          console.log(true);
+          //配對成功
+          this.currentState = GAME_STATE.CardsMatched;
+          view.pairCards(...model.revealedCards);
+          model.revealedCards = []; //清空
+          this.currentState = GAME_STATE.FirstCardAwaits; // 重設狀態
+        } else {
+          //配對失敗
+          console.log(false);
+          this.currentState = GAME_STATE.CardsMatchFailed;
+          setTimeout(this.resetCards, 1500);
+        }
+        break;
     }
-    console.log('this.currentStage:',this.currentState)
-    console.log('revealedCards', model.revealedCards.map(card=> card.dataset.index))
+    console.log("this.currentStage:", this.currentState);
+    console.log(
+      "revealedCards",
+      model.revealedCards.map((card) => card.dataset.index)
+    );
   },
-}
 
+  resetCards() {
+    view.flipCards(...model.revealedCards);
+    model.revealedCards = []; //清空已翻開牌
+    controller.currentState = GAME_STATE.FirstCardAwaits;
+  },
+};
 
-controller.generateCards()
+controller.generateCards();
 
 //監聽卡片點擊事件
 document.querySelectorAll(".card").forEach((card) => {
   card.addEventListener("click", (event) => {
-    view.filpCard(card)
+    controller.dispatchCardAction(card);
   });
 });

@@ -1,17 +1,47 @@
+#header {
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 85%;
+}
+#header .title {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+#header .title img {
+  max-width: 4em;
+}
+#header .title h2 {
+  padding-left: 0.5em;
+}
+#header .score {
+  margin: 0;
+  color: #6c90ac;
+}
+#header .tried {
+  margin-top: 5px;
+}
+
 #cards {
   display: flex;
   flex-wrap: wrap;
+  width: 85%; /* 新增：寬度和標頭一致 */
+  margin: 0 auto; /* 新增：置中 */
 }
 
 .card {
   /* 卡片在容器內的排版 */
-  flex: 7% 0 1;
+  flex: 7% 1 1;
   /* flex-basis(比例/pixel等...) 1排13張 100/13 約7%, flex-grow 有剩餘的空間是否填滿, flex-shirnk 如果空間不夠是否收縮自己的大小 */
   /* 因為cards的flex-direction為row 所以此處7%就是指寬度 */
   height: 8vw;
   border: 2px solid #e0e0e0;
   margin: 2px;
   box-sizing: border-box;
+  flex-direction: column;
+  justify-content: space-around;
 
   /* 卡片內部元素的排版 - 數字+圖片 */
   display: flex;
@@ -46,3 +76,7 @@
   background-size: cover;
 }
 /* 翻牌效果參考:https://www.tpisoftware.com/tpu/articleDetails/2748 */
+
+.paired {
+  background-color: #dae0e3;
+}
