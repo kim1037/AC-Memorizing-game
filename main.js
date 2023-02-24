@@ -15,6 +15,8 @@ const Symbols = [
 
 const model = {
   revealedCards: [], //存放每次 翻開的牌
+  score: 0,
+  triedTimes: 0,
 
   isRevealedCardsMatched() {
     //檢查配對
@@ -84,6 +86,35 @@ const view = {
       card.classList.add("paired");
     });
   },
+  renderScore(score) {
+    document.querySelector(".score").textContent = `Score: ${score}`;
+  },
+  renderTriedTimes(triedTimes) {
+    document.querySelector(
+      ".tried"
+    ).textContent = `You've tried: ${triedTimes} times`;
+  },
+  appendWrongAnimation(...cards) {
+    cards.map((card) => {
+      card.classList.add("wrong");
+      card.addEventListener(
+        "animationend",
+        (event) => event.target.classList.remove("wrong"),
+        { once: true }
+      );
+    });
+  },
+  showGameFinished() {
+    const div = document.createElement("div");
+    div.classList.add("completed");
+    div.innerHTML = `
+      <p>Complete!</p>
+      <p>Score: ${model.score}</p>
+      <p>You've tried: ${model.triedTimes} times</p>
+    `;
+    const header = document.querySelector("#header");
+    header.before(div);
+  },
 };
 
 //洗牌函式
@@ -118,20 +149,27 @@ const controller = {
         this.currentState = GAME_STATE.SecondCardAwaits;
         break;
       case GAME_STATE.SecondCardAwaits:
+        view.renderTriedTimes(++model.triedTimes);
         view.flipCards(card);
         model.revealedCards.push(card);
         //判斷配對成功與否
         if (model.isRevealedCardsMatched()) {
-          console.log(true);
           //配對成功
+          view.renderScore((model.score += 10));
           this.currentState = GAME_STATE.CardsMatched;
           view.pairCards(...model.revealedCards);
           model.revealedCards = []; //清空
+          if (model.score === 260) {
+            console.log("showGameFinished");
+            this.currentState = GAME_STATE.GameFinished;
+            view.showGameFinished(); 
+            return;
+          }
           this.currentState = GAME_STATE.FirstCardAwaits; // 重設狀態
         } else {
           //配對失敗
-          console.log(false);
           this.currentState = GAME_STATE.CardsMatchFailed;
+          view.appendWrongAnimation(...model.revealedCards);
           setTimeout(this.resetCards, 1500);
         }
         break;
