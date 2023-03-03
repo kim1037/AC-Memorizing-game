@@ -118,11 +118,11 @@ const view = {
   },
   showGameTime() {
     const time = document.querySelector(".time");
-    let currentTime = Date.now();
-    let passTime = Math.ceil((currentTime - model.startTime) / 1000);
-    let sec = passTime % 60;
-    let min = Math.floor(passTime / 60) % 60;
-    let hr = MMath.floor(passTime / 60 / 60);
+    const currentTime = Date.now();
+    const passTime = Math.ceil((currentTime - model.startTime) / 1000);
+    const sec = passTime % 60;
+    const min = Math.floor(passTime / 60) % 60;
+    const hr = Math.floor(passTime / 60 / 60);
     time.textContent = `Time pass ${hr} : ${min} : ${sec}`;
   },
 };
