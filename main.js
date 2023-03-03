@@ -146,9 +146,7 @@ const controller = {
   currentState: GAME_STATE.FirstCardAwaits, //初始為尚未翻牌的狀態
   generateCards() {
     view.displayCards(utility.getRandomNumberArray(52));
-    setInterval(function(){
-      view.showGameTime()
-    },1000)
+    let startTiming = setInterval(function(){view.showGameTime()},1000)
   },
 
   dispatchCardAction(card) {
