@@ -17,6 +17,7 @@ const model = {
   revealedCards: [], //存放每次 翻開的牌
   score: 0,
   triedTimes: 0,
+  startTime : Date.now(),
 
   isRevealedCardsMatched() {
     //檢查配對
@@ -115,6 +116,15 @@ const view = {
     const header = document.querySelector("#header");
     header.before(div);
   },
+  showGameTime(){
+    const time = document.querySelector('.time')
+    let currentTime = Date.now()
+    let passTime = Math.ceil((currentTime - model.startTime) / 1000);
+    let sec = passTime % 60
+    let min = Math.floor(passTime/60)
+    let hr = Math.floor(min/60)
+    time.textContent = `Time pass ${hr} : ${min} : ${sec}`;
+  }
 };
 
 //洗牌函式
@@ -136,6 +146,9 @@ const controller = {
   currentState: GAME_STATE.FirstCardAwaits, //初始為尚未翻牌的狀態
   generateCards() {
     view.displayCards(utility.getRandomNumberArray(52));
+    setInterval(function(){
+      view.showGameTime()
+    },1000)
   },
 
   dispatchCardAction(card) {
